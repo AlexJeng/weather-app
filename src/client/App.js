@@ -1,23 +1,28 @@
-import React, { Component } from 'react';
-import './app.css';
-import ReactImage from './react.png';
+import React, { useEffect, useState } from "react";
+import "./app.css";
 
-export default class App extends Component {
-  state = { username: null };
+export default function App() {
+  const [zipCode, setZipCode] = useState(90210);
+  const [weatherData, setWeatherData] = useState({});
 
-  componentDidMount() {
-    fetch('/api/getUsername')
-      .then(res => res.json())
-      .then(user => this.setState({ username: user.username }));
+  function getWeather() {
+    console.log("getting weather");
+
+    fetch("/api/getZipcode", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ test: zipCode }),
+    })
+      .then((res) => res.json())
+      .then((result) => setWeatherData(result))
+      .catch((err) => console.log("error"));
   }
 
-  render() {
-    const { username } = this.state;
-    return (
-      <div>
-        {username ? <h1>{`Hello ${username}`}</h1> : <h1>Loading.. please wait!</h1>}
-        <img src={ReactImage} alt="react" />
-      </div>
-    );
-  }
+  return (
+    <div>
+      <form>input zip</form>
+      <button onClick={getWeather}>Get Weather!</button>
+      {JSON.stringify(weatherData)}
+    </div>
+  );
 }
